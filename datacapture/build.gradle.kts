@@ -9,9 +9,9 @@ afterEvaluate {
     publications {
       register("release", MavenPublication::class) {
         from(components["release"])
-        artifactId = "data-capture"
+        artifactId = "datacapture"
         groupId = "com.google.android.fhir"
-        version = "0.1.0-alpha03"
+        version = "0.1.0-alpha03-r1"
         // Also publish source code for developers' convenience
         artifact(
           tasks.create<Jar>("androidSourcesJar") {
@@ -95,6 +95,12 @@ dependencies {
   implementation(Dependencies.Lifecycle.viewModelKtx)
   implementation(Dependencies.material)
   implementation(Dependencies.flexBox)
+
+  implementation("com.google.mlkit:barcode-scanning:16.1.1")
+  // Object feature and model
+  implementation("com.google.mlkit:object-detection:16.2.3")
+  // Custom model
+  implementation("com.google.mlkit:object-detection-custom:16.3.1")
 
   testImplementation(Dependencies.AndroidxTest.core)
   testImplementation(Dependencies.junit)

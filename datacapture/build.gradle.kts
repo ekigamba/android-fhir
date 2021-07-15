@@ -108,3 +108,57 @@ dependencies {
   testImplementation(Dependencies.robolectric)
   testImplementation(Dependencies.truth)
 }
+
+/**Create github.properties in root project folder file with gpr.usr=GITHUB_USER_ID  & gpr.key=PERSONAL_ACCESS_TOKEN**/
+//val githubProperties = Properties()
+//githubProperties.load(FileInputStream(rootProject.file("github.properties")))
+
+tasks {
+  val sourcesJar by creating(Jar::class) {
+    // dependsOn(JavaPlugin.CLASSES_TASK_NAME)
+    classifier = "sources"
+    from(android.sourceSets["main"].java.srcDirs)
+  }
+
+  artifacts { add("archives", sourcesJar) }
+}
+
+fun getVersionName(): String {
+  return "0.1.0-alpha03-r1" // Replace with version Name
+}
+
+fun getArtificatId(): String {
+  return "datacapture" // Replace with library name ID
+}
+
+publishing {
+  publications {
+    create<MavenPublication>("datacapture") {
+      run {
+        groupId = "com.google.android.fhir"
+        artifactId = getArtificatId()
+        version = getVersionName()
+        artifact("$buildDir/outputs/aar/${getArtificatId()}-release.aar")
+      }
+    }
+  }
+
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      /** Configure path of your package repository on Github
+       *  Replace GITHUB_USERID with your/organisation Github userID and REPOSITORY with the repository name on GitHub
+       */
+      url = uri("https://maven.pkg.github.com/google/android-fhir")
+      credentials {
+        /**Create github.properties in root project folder file with gpr.usr=GITHUB_USER_ID  & gpr.key=PERSONAL_ACCESS_TOKEN
+         * OR
+         * Set environment variables
+         */
+        username = System.getenv("GPR_USER")
+        password = System.getenv("GPR_API_KEY")
+
+      }
+    }
+  }
+}

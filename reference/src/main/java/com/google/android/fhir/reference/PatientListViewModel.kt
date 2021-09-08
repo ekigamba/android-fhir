@@ -21,12 +21,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
-import com.google.android.fhir.search.count
 import com.google.android.fhir.search.search
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
@@ -39,8 +37,7 @@ class PatientListViewModel(application: Application, private val fhirEngine: Fhi
   AndroidViewModel(application) {
 
   val liveSearchedPatients = MutableLiveData<List<PatientItem>>()
-  val patientCount = liveData { emit(count()) }
-
+  val patientCount = MutableLiveData<Int>()
   init {
     fetchAndPost { getSearchResults() }
   }
@@ -50,15 +47,9 @@ class PatientListViewModel(application: Application, private val fhirEngine: Fhi
   }
 
   private fun fetchAndPost(search: suspend () -> List<PatientItem>) {
-    viewModelScope.launch { liveSearchedPatients.value = search() }
-  }
-
-  private suspend fun count(): Long {
-    return fhirEngine.count<Patient> {
-      filter(Patient.ADDRESS_CITY) {
-        modifier = StringFilterModifier.MATCHES_EXACTLY
-        value = "NAIROBI"
-      }
+    viewModelScope.launch {
+      liveSearchedPatients.value = search()
+      patientCount.value = liveSearchedPatients.value!!.size
     }
   }
 
@@ -107,6 +98,15 @@ class PatientListViewModel(application: Application, private val fhirEngine: Fhi
     override fun toString(): String = code
   }
 
+  data class ConditionItem(
+    val id: String,
+    val code: String,
+    val effective: String,
+    val value: String
+  ) {
+    override fun toString(): String = code
+  }
+
   class PatientListViewModelFactory(
     private val application: Application,
     private val fhirEngine: FhirEngine
@@ -141,7 +141,7 @@ internal fun Patient.toPatientItem(position: Int): PatientListViewModel.PatientI
     dob = dob,
     phone = phone,
     city = city,
-    country = country,
+    country = country ?: "Sample country",
     isActive = isActive,
     html = html
   )

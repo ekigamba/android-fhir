@@ -2,6 +2,7 @@ plugins {
   id(Plugins.BuildPlugins.androidLib)
   id(Plugins.BuildPlugins.kotlinAndroid)
   id(Plugins.BuildPlugins.mavenPublish)
+  jacoco
   id(Plugins.BuildPlugins.parcelize)
 }
 
@@ -12,7 +13,7 @@ afterEvaluate {
         from(components["release"])
         artifactId = "data-capture"
         groupId = "com.google.android.fhir"
-        version = "0.1.0-alpha04"
+        version = "0.1.0-alpha05"
         // Also publish source code for developers' convenience
         artifact(
           tasks.create<Jar>("androidSourcesJar") {
@@ -34,6 +35,8 @@ afterEvaluate {
   }
 }
 
+createJacocoTestReportTask()
+
 android {
   compileSdk = Sdk.compileSdk
   buildToolsVersion = Plugins.Versions.buildTools
@@ -53,7 +56,6 @@ android {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
     }
-    getByName("debug") { isTestCoverageEnabled = true }
   }
   compileOptions {
     // Flag to enable support for the new language APIs
@@ -68,8 +70,7 @@ android {
     // See https://developer.android.com/studio/write/java8-support
     jvmTarget = JavaVersion.VERSION_1_8.toString()
   }
-  testOptions { unitTests.isIncludeAndroidResources = true }
-  jacoco { version = "0.8.7" }
+  configureJacocoTestOptions()
 }
 
 configurations { all { exclude(module = "xpp3") } }

@@ -70,6 +70,12 @@
               "definition": "http://hl7.org/fhir/StructureDefinition/Patient#Patient.name.given",
               "type": "string",
               "required": true,
+              "initial": [
+                {
+                  "valueString": "Guess who's back?"
+                }
+              ],
+              "readOnly": true,
               "text": "First Name",
               "_text": {
                 "extension": [
@@ -126,7 +132,6 @@
           ]
         },
         {
-
           "extension": [
             {
               "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
@@ -218,7 +223,8 @@
                   {
                     "language": "sw",
                     "value": "Mwanamke"
-                  }]
+                  }
+                ]
               }
             },
             {
@@ -230,7 +236,8 @@
                   {
                     "language": "sw",
                     "value": "Mwanaume"
-                  }]
+                  }
+                ]
               }
             }
           ]
@@ -396,15 +403,15 @@
         },
         {
           "extension": [
-          {
-            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
-            "valueExpression": {
-              "language": "text/fhirpath",
-              "expression": "Patient.active",
-              "name": "patientActive"
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "Patient.active",
+                "name": "patientActive"
+              }
             }
-          }
-        ],
+          ],
           "linkId": "PR-active",
           "definition": "http://hl7.org/fhir/StructureDefinition/Patient#Patient.active",
           "type": "boolean",

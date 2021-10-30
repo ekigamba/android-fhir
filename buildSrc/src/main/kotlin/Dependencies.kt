@@ -109,6 +109,7 @@ object Dependencies {
   const val apacheCommonsIo = "commons-io:commons-io:${Versions.apacheCommonsIo}"
   const val junit = "junit:junit:${Versions.junit}"
   const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}"
+  const val mockitoInline = "org.mockito:mockito-inline:${Versions.mockitoInline}"
   const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
   const val truth = "com.google.truth:truth:${Versions.truth}"
   const val flexBox = "com.google.android.flexbox:flexbox:${Versions.flexBox}"
@@ -163,6 +164,7 @@ object Dependencies {
     const val espresso = "3.3.0"
     const val junit = "4.13"
     const val mockitoKotlin = "3.2.0"
+    const val mockitoInline = "4.0.0"
     const val robolectric = "4.5.1"
   }
 }

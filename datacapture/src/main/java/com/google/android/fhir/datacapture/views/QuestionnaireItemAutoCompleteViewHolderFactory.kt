@@ -170,7 +170,7 @@ internal object QuestionnaireItemAutoCompleteViewHolderFactory :
       }
 
       override fun displayValidationResult(validationResult: ValidationResult) {
-        groupHeader.error =
+        textInputLayout.error =
           if (validationResult.getSingleStringValidationMessage() == "") null
           else validationResult.getSingleStringValidationMessage()
       }

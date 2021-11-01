@@ -19,15 +19,21 @@ package com.google.android.fhir.datacapture.views
 import android.text.Editable
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.fhir.datacapture.R
+import com.google.android.fhir.datacapture.fetchBitmap
+import com.google.android.fhir.datacapture.itemImage
 import com.google.android.fhir.datacapture.localizedPrefix
 import com.google.android.fhir.datacapture.localizedText
 import com.google.android.fhir.datacapture.validation.ValidationResult
 import com.google.android.fhir.datacapture.validation.getSingleStringValidationMessage
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
 internal abstract class QuestionnaireItemEditTextViewHolderFactory :
@@ -44,6 +50,7 @@ internal abstract class QuestionnaireItemEditTextViewHolderDelegate(
   private lateinit var textQuestion: TextView
   private lateinit var textInputLayout: TextInputLayout
   private lateinit var textInputEditText: TextInputEditText
+  private lateinit var itemImageView: ImageView
   override lateinit var questionnaireItemViewItem: QuestionnaireItemViewItem
 
   override fun init(itemView: View) {
@@ -51,6 +58,8 @@ internal abstract class QuestionnaireItemEditTextViewHolderDelegate(
     textQuestion = itemView.findViewById(R.id.question)
     textInputLayout = itemView.findViewById(R.id.textInputLayout)
     textInputEditText = itemView.findViewById(R.id.textInputEditText)
+    itemImageView = itemView.findViewById(R.id.itemImage)
+
     textInputEditText.setRawInputType(rawInputType)
     textInputEditText.isSingleLine = isSingleLine
     textInputEditText.doAfterTextChanged { editable: Editable? ->
@@ -70,6 +79,21 @@ internal abstract class QuestionnaireItemEditTextViewHolderDelegate(
     textInputEditText.setText(getText(questionnaireItemViewItem.singleAnswerOrNull))
     if (questionnaireItemViewItem.questionnaireItem.readOnly) {
       setViewReadOnly(textInputEditText)
+    }
+
+    // The RecyclerView is recycling the ImageView therefore making them visible and recycling
+    // images from previous questions
+    itemImageView.setImageBitmap(null)
+
+    questionnaireItemViewItem.questionnaireItem.itemImage?.let {
+      GlobalScope.launch {
+        it.fetchBitmap()?.run {
+          GlobalScope.launch(Dispatchers.Main) {
+            itemImageView.visibility = View.VISIBLE
+            itemImageView.setImageBitmap(this@run)
+          }
+        }
+      }
     }
   }
 

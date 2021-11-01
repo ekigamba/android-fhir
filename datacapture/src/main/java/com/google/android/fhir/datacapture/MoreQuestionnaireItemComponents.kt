@@ -16,7 +16,13 @@
 
 package com.google.android.fhir.datacapture
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.util.Log
 import java.util.Locale
+import org.hl7.fhir.r4.model.Attachment
+import org.hl7.fhir.r4.model.Binary
 import org.hl7.fhir.r4.model.BooleanType
 import org.hl7.fhir.r4.model.CodeableConcept
 import org.hl7.fhir.r4.model.Questionnaire
@@ -39,6 +45,8 @@ internal const val EXTENSION_ITEM_CONTROL_URL =
 internal const val EXTENSION_ITEM_CONTROL_SYSTEM = "http://hl7.org/fhir/questionnaire-item-control"
 internal const val EXTENSION_HIDDEN_URL =
   "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden"
+internal const val EXTENSION_ITEM_IMAGE =
+  "http://hl7.org/fhir/uv/sdc/StructureDefinition/cpg-itemImage"
 
 // Item control code, or null
 internal val Questionnaire.QuestionnaireItemComponent.itemControl: ItemControlTypes?
@@ -168,3 +176,56 @@ fun QuestionnaireResponse.QuestionnaireResponseItemComponent.addNestedItemsToAns
  */
 private inline fun Questionnaire.QuestionnaireItemComponent.getNestedQuestionnaireResponseItems() =
   item.map { it.createQuestionnaireResponseItem() }
+
+/** The Attachment defined in the [EXTENSION_ITEM_IMAGE] extension where applicable */
+internal val Questionnaire.QuestionnaireItemComponent.itemImage: Attachment?
+  get() {
+    val extension = this.extension.singleOrNull { it.url == EXTENSION_ITEM_IMAGE }
+    return if (extension != null) extension.value as Attachment else null
+  }
+
+/** Whether the Attachment has a [Attachment.contentType] for an image */
+val Attachment.isImage: Boolean
+  get() = this.hasContentType() && contentType.startsWith("image")
+
+/** Whether the Binary has a [Binary.contentType] for an image */
+private fun Binary.isImage(): Boolean = this.hasContentType() && contentType.startsWith("image")
+
+/** Decodes the Bitmap from the Base64 encoded string in [Bitmap.data] */
+private fun Binary.getBitmap(): Bitmap? {
+  return if (isImage()) {
+    Base64.decode(this.dataElement.valueAsString, Base64.DEFAULT).let { byteArray ->
+      BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+  } else {
+    Log.e("Binary", "Binary does not have a contentType image")
+    null
+  }
+}
+
+/**
+ * Returns the Bitmap defined in the attachment as inline Base64 encoded image, Binary resource
+ * defined in the url or externally hosted image. Inline Base64 encoded image requires to have
+ * contentType starting with image
+ */
+suspend fun Attachment.fetchBitmap(): Bitmap? {
+  // Attachment's with data inline need the contentType property
+  // Conversion to Bitmap should only be made if the contentType is image
+  if (data != null) {
+    if (isImage) {
+      return BitmapFactory.decodeByteArray(data, 0, data.size)
+    }
+    Log.e("Attachment", "Attachment is not of contentType image/**")
+    return null
+  } else if (url != null && (url.startsWith("https") || url.startsWith("http"))) {
+    // Points to a Binary resource on a FHIR compliant server
+    return if (url.contains("/Binary/")) {
+      DataCaptureConfig.attachmentResolver?.run { resolveBinaryResource(url)?.getBitmap() }
+    } else {
+      DataCaptureConfig.attachmentResolver?.resolveImageUrl(url)
+    }
+  }
+
+  Log.e("Attachment", "Could not determine the Bitmap in Attachment $id")
+  return null
+}

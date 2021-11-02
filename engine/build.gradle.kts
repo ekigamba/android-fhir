@@ -12,8 +12,8 @@ afterEvaluate {
       register("release", MavenPublication::class) {
         from(components["release"])
         artifactId = "engine"
-        groupId = "com.google.android.fhir"
-        version = "0.1.0-alpha05"
+        groupId = "org.smartregister"
+        version = "0.1.0-alpha04-preview-2-SNAPSHOT"
         // Also publish source code for developers' convenience
         artifact(
           tasks.create<Jar>("androidSourcesJar") {

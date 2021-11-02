@@ -12,6 +12,28 @@ buildscript {
   }
 }
 
+plugins {
+  id("com.vanniktech.android.junit.jacoco") version "0.16.0"
+  id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+}
+
+group = "org.smartregister"
+version = "-SNAPSHOT"
+
+nexusPublishing {
+
+
+  repositories {
+    sonatype()  //sonatypeUsername and sonatypePassword properties are used automatically
+
+  }
+
+  // these are not strictly required. The default timeouts are set to 1 minute. But Sonatype can be really slow.
+  // If you get the error "java.net.SocketTimeoutException: timeout", these lines will help.
+  //connectTimeout = Duration.ofMinutes(3)
+  //clientTimeout = Duration.ofMinutes(3)
+}
+
 allprojects {
   repositories {
     google()

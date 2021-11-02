@@ -39,7 +39,6 @@ internal object QuestionnaireItemDropDownViewHolderFactory :
       private lateinit var textView: TextView
       private lateinit var textInputLayout: TextInputLayout
       private lateinit var autoCompleteTextView: AutoCompleteTextView
-      private lateinit var autoCompleteTextViewContainer: TextInputLayout
       override lateinit var questionnaireItemViewItem: QuestionnaireItemViewItem
       private lateinit var context: Context
 
@@ -48,7 +47,6 @@ internal object QuestionnaireItemDropDownViewHolderFactory :
         prefixTextView = itemView.findViewById(R.id.prefix)
         textView = itemView.findViewById(R.id.dropdown_question_title)
         autoCompleteTextView = itemView.findViewById(R.id.auto_complete)
-        autoCompleteTextViewContainer = itemView.findViewById(R.id.auto_complete_container)
         context = itemView.context
       }
 
@@ -70,7 +68,7 @@ internal object QuestionnaireItemDropDownViewHolderFactory :
         autoCompleteTextView.setAdapter(adapter)
         if (questionnaireItemViewItem.questionnaireItem.readOnly) {
           setViewReadOnly(autoCompleteTextView)
-          setViewReadOnly(autoCompleteTextViewContainer)
+          setViewReadOnly(textInputLayout)
         } else {
           autoCompleteTextView.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->

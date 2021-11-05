@@ -13,7 +13,7 @@ afterEvaluate {
         from(components["release"])
         artifactId = "data-capture"
         groupId = "org.smartregister"
-        version = "0.1.0-alpha05-preview-5-SNAPSHOT"
+        version = "0.1.0-alpha05-preview-6-SNAPSHOT"
         // Also publish source code for developers' convenience
         artifact(
           tasks.create<Jar>("androidSourcesJar") {

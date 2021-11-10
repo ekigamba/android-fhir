@@ -220,6 +220,8 @@ object ResourceMapper {
             )
         }
       }
+
+      populateInitialValues(question.item, *resources)
     }
   }
 

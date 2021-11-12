@@ -104,9 +104,6 @@ object Dependencies {
   }
 
   const val androidJunitRunner = "androidx.test.runner.AndroidJUnitRunner"
-  const val apacheCommonsCompress =
-    "org.apache.commons:commons-compress:${Versions.apacheCommonsCompress}"
-  const val apacheCommonsIo = "commons-io:commons-io:${Versions.apacheCommonsIo}"
   const val junit = "junit:junit:${Versions.junit}"
   const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}"
   const val mockitoInline = "org.mockito:mockito-inline:${Versions.mockitoInline}"
@@ -139,8 +136,6 @@ object Dependencies {
       const val stdlib = "1.5.31"
     }
 
-    const val apacheCommonsCompress = "1.20"
-    const val apacheCommonsIo = "2.10.0"
     const val desugarJdkLibs = "1.0.9"
     const val fhirUcum = "1.0.3"
     const val guava = "28.2-android"

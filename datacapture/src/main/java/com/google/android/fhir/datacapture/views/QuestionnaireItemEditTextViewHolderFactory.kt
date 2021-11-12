@@ -16,8 +16,10 @@
 
 package com.google.android.fhir.datacapture.views
 
+import android.content.Context
 import android.text.Editable
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -77,6 +79,13 @@ internal abstract class QuestionnaireItemEditTextViewHolderDelegate(
     }
     textQuestion.text = questionnaireItemViewItem.questionnaireItem.localizedText
     textInputEditText.setText(getText(questionnaireItemViewItem.singleAnswerOrNull))
+    textInputEditText.setOnFocusChangeListener { view, focused ->
+      if (!focused) {
+        (view.context.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as
+            InputMethodManager)
+          .hideSoftInputFromWindow(view.windowToken, 0)
+      }
+    }
     if (questionnaireItemViewItem.questionnaireItem.readOnly) {
       setViewReadOnly(textInputEditText)
     }
